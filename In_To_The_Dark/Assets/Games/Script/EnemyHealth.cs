@@ -10,42 +10,49 @@ public class EnemyHealth : MonoBehaviour
     [Header("Health Bar")]
     public GameObject healthBar;
     public Image healthFill;
+
+    [Header("Death")]
+    public float deathTime = 2f;
+
     private Animator animator;
-    private bool Dead = false;
-    public float DeadTime = 4f;
+    private EnemyFollow enemyFollow;
+    private bool isDead = false;
 
     void Start()
     {
         currentHealth = maxHealth;
 
+        animator = GetComponent<Animator>();
+        enemyFollow = GetComponent<EnemyFollow>();
+
+        // Health bar OFF at start
         if (healthBar != null)
+        {
             healthBar.SetActive(false);
+        }
 
         UpdateHealthBar();
     }
 
-    public void ShowHealthBar()
-    {
-        if (healthBar = null)
-            healthBar.SetActive(true);
-    }
-
-    public void HideHealthBar()
-    {
-       if(healthBar != null)
-            healthBar.SetActive(false);
-    }
-
     public void TakeDamage(float damage)
     {
+        if (isDead)
+            return;
+
         currentHealth -= damage;
         currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
 
         Debug.Log("Enemy Health: " + currentHealth);
 
+        // Show health bar when damaged
+        if (healthBar != null)
+        {
+            healthBar.SetActive(true);
+        }
+
         UpdateHealthBar();
 
-        if (currentHealth <= 0)
+        if (currentHealth <= 0f)
         {
             Die();
         }
@@ -59,35 +66,42 @@ public class EnemyHealth : MonoBehaviour
         }
     }
 
+    public void ShowHealthBar(bool show)
+    {
+        if (healthBar != null && !isDead)
+        {
+            healthBar.SetActive(show);
+        }
+    }
+
     void Die()
     {
+        if (isDead)
+            return;
+
+        isDead = true;
+
         Debug.Log("ENEMY DEAD!");
 
-        // Health bar close
+        // Hide health bar
         if (healthBar != null)
+        {
             healthBar.SetActive(false);
-        {
-            animator = GetComponent<Animator>();
-            if (animator != null)
-            {
-                animator.SetTrigger("Dead");
-                Dead = true;
-            }
-            else
-            {
-                Debug.LogWarning("Animator component not found on the enemy.");
-            }
-        }
-        if (Dead)
-        {
-           EnemyFollow enemyFollow = GetComponent<EnemyFollow>();
-            if (enemyFollow != null)
-            {
-                enemyFollow.enabled = false;
-            }
-            Destroy(gameObject, DeadTime);
         }
 
-        
+        // Stop enemy movement
+        if (enemyFollow != null)
+        {
+            enemyFollow.enabled = false;
+        }
+
+        // Death animation
+        if (animator != null)
+        {
+            animator.SetTrigger("Dead");
+        }
+
+        // Destroy enemy after animation
+        Destroy(gameObject, deathTime);
     }
 }

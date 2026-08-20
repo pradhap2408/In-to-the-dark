@@ -64,5 +64,6 @@ public class EnemyFollow : MonoBehaviour
             }
             animator.SetBool("Attacking", Attacking);
         }
+    
     }
 
