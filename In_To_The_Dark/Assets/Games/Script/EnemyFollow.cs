@@ -8,6 +8,9 @@ public class EnemyFollow : MonoBehaviour
     public float stopRange = 2f;
     public float speed = 3f;
     public float rotationSpeed = 8f;
+    public Animator animator;
+    private bool Walking = false;
+    private bool Attacking = false;
 
     void Update()
     {
@@ -19,17 +22,16 @@ public class EnemyFollow : MonoBehaviour
             player.position
         );
 
-        // Player அருகில் இருந்தால் follow
         if (distance <= followRange && distance > stopRange)
         {
             Vector3 direction = player.position - transform.position;
 
-            // Y movement வேண்டாம்
+            
             direction.y = 0f;
 
             if (direction != Vector3.zero)
             {
-                // Player-ஐ நோக்கி திரும்பு
+              
                 Quaternion targetRotation =
                     Quaternion.LookRotation(direction);
 
@@ -39,12 +41,28 @@ public class EnemyFollow : MonoBehaviour
                     rotationSpeed * Time.deltaTime
                 );
 
-                // Player-ஐ follow செய்
+         
                 transform.position +=
                     direction.normalized *
                     speed *
                     Time.deltaTime;
+                Walking = true;
             }
         }
+        else
+        {
+            Walking = false;
+        }
+        animator.SetBool("Walking", Walking);
+        if (distance <= stopRange)
+        {
+                Attacking = true;
+            }
+        else
+            {
+                Attacking = false;
+            }
+            animator.SetBool("Attacking", Attacking);
+        }
     }
-}
+

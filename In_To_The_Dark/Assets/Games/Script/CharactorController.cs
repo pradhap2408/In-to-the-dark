@@ -24,6 +24,7 @@ public class CharactorController : MonoBehaviour
         Vector3 move = transform.right * h + transform.forward * v;
 
         controller.Move(move.normalized * speed * Time.deltaTime);
+        controller.Move(move * speed * Time.deltaTime);
 
     }
 }
