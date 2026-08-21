@@ -3,50 +3,33 @@ using UnityEngine;
 public class CharactorController : MonoBehaviour
 {
     public CharacterController controller;
-
-    [Header("Movement")]
     public float speed = 15f;
-
-    [Header("Gravity")]
     public float gravity = -9.81f;
+    public Animator Gun;
 
-    private float verticalVelocity;
 
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         controller = GetComponent<CharacterController>();
+
     }
 
+    // Update is called once per frame
     void Update()
     {
-        // Input
         float h = Input.GetAxisRaw("Horizontal");
+
         float v = Input.GetAxisRaw("Vertical");
 
-        // Movement direction
+        bool walking = h != 0 || v != 0;
+
+        Gun.SetBool("Walk", walking);
+
         Vector3 move = transform.right * h + transform.forward * v;
 
-        // Prevent diagonal movement from being faster
-        if (move.magnitude > 1f)
-        {
-            move.Normalize();
-        }
+        controller.Move(move.normalized * speed * Time.deltaTime);
+        controller.Move(move * speed * Time.deltaTime);
 
-        // Gravity
-        if (controller.isGrounded)
-        {
-            if (verticalVelocity < 0)
-            {
-                verticalVelocity = -2f;
-            }
-        }
-
-        verticalVelocity += gravity * Time.deltaTime;
-
-        // Final movement
-        Vector3 finalMove = move * speed;
-        finalMove.y = verticalVelocity;
-
-        controller.Move(finalMove * Time.deltaTime);
     }
 }
