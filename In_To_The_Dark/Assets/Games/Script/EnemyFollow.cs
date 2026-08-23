@@ -4,11 +4,15 @@ public class EnemyFollow : MonoBehaviour
 {
     public Transform player;
 
+    [Header("Follow")]
     public float followRange = 15f;
     public float stopRange = 2f;
     public float speed = 3f;
     public float rotationSpeed = 8f;
+
+    [Header("Animator")]
     public Animator animator;
+
     private bool Walking = false;
     private bool Attacking = false;
 
@@ -22,16 +26,14 @@ public class EnemyFollow : MonoBehaviour
             player.position
         );
 
+        // FOLLOW
         if (distance <= followRange && distance > stopRange)
         {
             Vector3 direction = player.position - transform.position;
-
-            
             direction.y = 0f;
 
             if (direction != Vector3.zero)
             {
-              
                 Quaternion targetRotation =
                     Quaternion.LookRotation(direction);
 
@@ -41,11 +43,11 @@ public class EnemyFollow : MonoBehaviour
                     rotationSpeed * Time.deltaTime
                 );
 
-         
                 transform.position +=
                     direction.normalized *
                     speed *
                     Time.deltaTime;
+
                 Walking = true;
             }
         }
@@ -53,17 +55,22 @@ public class EnemyFollow : MonoBehaviour
         {
             Walking = false;
         }
-        animator.SetBool("Walking", Walking);
+
+        // ATTACK
         if (distance <= stopRange)
         {
-                Attacking = true;
-            }
+            Attacking = true;
+        }
         else
-            {
-                Attacking = false;
-            }
+        {
+            Attacking = false;
+        }
+
+        // Animator
+        if (animator != null)
+        {
+            animator.SetBool("Walking", Walking);
             animator.SetBool("Attacking", Attacking);
         }
-    
     }
-
+}

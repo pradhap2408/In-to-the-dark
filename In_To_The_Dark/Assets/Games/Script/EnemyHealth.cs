@@ -7,16 +7,21 @@ public class EnemyHealth : MonoBehaviour
     public float maxHealth = 100f;
     private float currentHealth;
 
-    [Header("Health Bar")]
+   /* [Header("Health Bar")]
     public GameObject healthBar;
-    public Image healthFill;
+    public Image healthFill;*/
+
+    [Header("Hit")]
+    public float hitAnimationTime = 0.767f;
 
     [Header("Death")]
     public float deathTime = 2f;
 
     private Animator animator;
     private EnemyFollow enemyFollow;
+
     private bool isDead = false;
+    private bool isHit = false;
 
     void Start()
     {
@@ -25,13 +30,13 @@ public class EnemyHealth : MonoBehaviour
         animator = GetComponent<Animator>();
         enemyFollow = GetComponent<EnemyFollow>();
 
-        // Health bar OFF at start
-        if (healthBar != null)
+        // Health bar OFF
+      /*  if (healthBar != null)
         {
             healthBar.SetActive(false);
         }
 
-        UpdateHealthBar();
+        UpdateHealthBar();*/
     }
 
     public void TakeDamage(float damage)
@@ -39,40 +44,96 @@ public class EnemyHealth : MonoBehaviour
         if (isDead)
             return;
 
+        // Reduce health
         currentHealth -= damage;
-        currentHealth = Mathf.Clamp(currentHealth, 0f, maxHealth);
+        currentHealth = Mathf.Clamp(
+            currentHealth,
+            0f,
+            maxHealth
+        );
 
         Debug.Log("Enemy Health: " + currentHealth);
 
-        // Show health bar when damaged
-        if (healthBar != null)
-        {
+        // Show health bar
+       /* if (healthBar != null)
+       {
             healthBar.SetActive(true);
         }
 
-        UpdateHealthBar();
+       UpdateHealthBar();*/
 
+        // Hit animation
+        if (damage > 0f && currentHealth > 0f)
+        {
+            PlayHit();
+        }
+
+        // Death
         if (currentHealth <= 0f)
         {
             Die();
         }
     }
 
-    void UpdateHealthBar()
+    void PlayHit()
     {
-        if (healthFill != null)
+        if (isDead)
+            return;
+
+        if (isHit)
+            return;
+
+        isHit = true;
+
+        // Stop movement temporarily
+        if (enemyFollow != null)
         {
-            healthFill.fillAmount = currentHealth / maxHealth;
+            enemyFollow.enabled = false;
+        }
+
+        // Play Hit animation
+        if (animator != null)
+        {
+            animator.ResetTrigger("Hit");
+            animator.SetTrigger("Hit");
+
+            Debug.Log("HIT ANIMATION PLAY");
+        }
+
+        // Resume after hit animation
+        Invoke(nameof(ResumeAfterHit), hitAnimationTime);
+    }
+
+    void ResumeAfterHit()
+    {
+        if (isDead)
+            return;
+
+        isHit = false;
+
+        // Resume enemy movement
+        if (enemyFollow != null)
+        {
+            enemyFollow.enabled = true;
         }
     }
 
-    public void ShowHealthBar(bool show)
+    //void UpdateHealthBar()
+   /* {
+        if (healthFill != null)
+        {
+            healthFill.fillAmount =
+                currentHealth / maxHealth;
+        }
+    }
+
+  /*  public void ShowHealthBar(bool show)
     {
         if (healthBar != null && !isDead)
         {
             healthBar.SetActive(show);
         }
-    }
+    }*/
 
     void Die()
     {
@@ -83,11 +144,14 @@ public class EnemyHealth : MonoBehaviour
 
         Debug.Log("ENEMY DEAD!");
 
+        // Cancel hit resume
+        CancelInvoke(nameof(ResumeAfterHit));
+
         // Hide health bar
-        if (healthBar != null)
+       /* if (healthBar != null)
         {
             healthBar.SetActive(false);
-        }
+        }*/
 
         // Stop enemy movement
         if (enemyFollow != null)
@@ -98,10 +162,11 @@ public class EnemyHealth : MonoBehaviour
         // Death animation
         if (animator != null)
         {
+            animator.ResetTrigger("Hit");
             animator.SetTrigger("Dead");
         }
 
-        // Destroy enemy after animation
-        Destroy(gameObject, deathTime);
+        // Destroy
+       // Destroy(gameObject, deathTime);
     }
 }
