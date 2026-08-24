@@ -23,20 +23,27 @@ public class EnemyHealth : MonoBehaviour
     private bool isDead = false;
     private bool isHit = false;
 
+    private AudioSource audioSource;
+    public AudioClip monster;
+
+
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+
         currentHealth = maxHealth;
 
         animator = GetComponent<Animator>();
         enemyFollow = GetComponent<EnemyFollow>();
+      
 
         // Health bar OFF
-      /*  if (healthBar != null)
-        {
-            healthBar.SetActive(false);
-        }
+        /*  if (healthBar != null)
+          {
+              healthBar.SetActive(false);
+          }
 
-        UpdateHealthBar();*/
+          UpdateHealthBar();*/
     }
 
     public void TakeDamage(float damage)
@@ -53,6 +60,7 @@ public class EnemyHealth : MonoBehaviour
         );
 
         Debug.Log("Enemy Health: " + currentHealth);
+      
 
         // Show health bar
        /* if (healthBar != null)
@@ -141,6 +149,12 @@ public class EnemyHealth : MonoBehaviour
             return;
 
         isDead = true;
+        if(isDead)
+        {
+            audioSource.Stop();
+            animator.StopPlayback();
+        }
+
 
         Debug.Log("ENEMY DEAD!");
 

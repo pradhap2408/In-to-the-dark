@@ -4,73 +4,159 @@ public class EnemyFollow : MonoBehaviour
 {
     public Transform player;
 
-    [Header("Follow")]
+    [Header("Range")]
     public float followRange = 15f;
-    public float stopRange = 2f;
+    public float attackDistance = 3f;
+
+    [Header("Movement")]
     public float speed = 3f;
     public float rotationSpeed = 8f;
 
     [Header("Animator")]
     public Animator animator;
 
-    private bool Walking = false;
-    private bool Attacking = false;
+  
+    private bool isDead = false;
+    private bool attacking = false;
+
+    void Start()
+    {
+        
+
+        if (animator == null)
+            animator = GetComponent<Animator>();
+
+        
+    }
 
     void Update()
     {
-        if (player == null)
+        if (player == null || isDead)
             return;
 
-        float distance = Vector3.Distance(
-            transform.position,
-            player.position
-        );
+        Vector3 direction = player.position - transform.position;
+        direction.y = 0f;
 
-        // FOLLOW
-        if (distance <= followRange && distance > stopRange)
+        float distance = direction.magnitude;
+
+        // OUTSIDE FOLLOW RANGE
+        if (distance > followRange)
         {
-            Vector3 direction = player.position - transform.position;
-            direction.y = 0f;
+            attacking = false;
 
-            if (direction != Vector3.zero)
+            animator.SetBool("Walking", false);
+            animator.SetBool("Attacking", false);
+
+            return;
+        }
+
+        // =========================
+        // ATTACK RANGE
+        // =========================
+
+        if (distance <= attackDistance)
+        {
+            // STOP
+            animator.SetBool("Walking", false);
+
+            // FACE PLAYER
+            FacePlayer();
+
+            // START ATTACK
+            if (!attacking)
             {
-                Quaternion targetRotation =
-                    Quaternion.LookRotation(direction);
+                attacking = true;
 
-                transform.rotation = Quaternion.Slerp(
-                    transform.rotation,
-                    targetRotation,
-                    rotationSpeed * Time.deltaTime
-                );
+                animator.SetBool("Attacking", true);
 
-                transform.position +=
-                    direction.normalized *
-                    speed *
-                    Time.deltaTime;
+                // Force Attack state
+                animator.Play("Attack", 0, 0f);
 
-                Walking = true;
+            
             }
-        }
-        else
-        {
-            Walking = false;
+
+            return;
         }
 
-        // ATTACK
-        if (distance <= stopRange)
+        // =========================
+        // FOLLOW
+        // =========================
+
+        attacking = false;
+
+        animator.SetBool("Attacking", false);
+        animator.SetBool("Walking", true);
+
+        // Rotate
+        if (direction.sqrMagnitude > 0.001f)
         {
-            Attacking = true;
-        }
-        else
-        {
-            Attacking = false;
+            Quaternion targetRotation =
+                Quaternion.LookRotation(direction);
+
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                targetRotation,
+                rotationSpeed * Time.deltaTime
+            );
         }
 
-        // Animator
-        if (animator != null)
+        // Move only until attack distance
+        float remainingDistance =
+            distance - attackDistance;
+
+        float moveAmount =
+            Mathf.Min(
+                speed * Time.deltaTime,
+                remainingDistance
+            );
+
+        if (moveAmount > 0f)
         {
-            animator.SetBool("Walking", Walking);
-            animator.SetBool("Attacking", Attacking);
+            transform.position +=
+                direction.normalized * moveAmount;
         }
+    }
+
+    void FacePlayer()
+    {
+        Vector3 direction =
+            player.position - transform.position;
+
+        direction.y = 0f;
+
+        if (direction.sqrMagnitude > 0.001f)
+        {
+            Quaternion targetRotation =
+                Quaternion.LookRotation(direction);
+
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                targetRotation,
+                rotationSpeed * Time.deltaTime
+            );
+        }
+    }
+
+
+
+    public void Hit()
+    {
+        if (isDead)
+            return;
+
+        animator.SetTrigger("Hit");
+    }
+
+    public void Dead()
+    {
+        if (isDead)
+            return;
+
+        isDead = true;
+        attacking = false;
+
+        animator.SetBool("Walking", false);
+        animator.SetBool("Attacking", false);
+        animator.SetBool("Dead", true);
     }
 }
