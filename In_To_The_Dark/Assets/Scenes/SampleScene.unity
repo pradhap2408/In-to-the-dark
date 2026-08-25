@@ -890,7 +890,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 591777624}
   followRange: 20
-  attackDistance: 6
+  attackDistance: 7
   speed: 5
   rotationSpeed: 8
   animator: {fileID: 559397041}
@@ -933,7 +933,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f23bc9f026d65c045966d876bdbb947b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 500
+  maxHealth: 100
   hitAnimationTime: 0.5
   deathTime: 4
   monster: {fileID: 8300000, guid: 7f926b4fce2177b4cb5667195bf6cb64, type: 3}
@@ -2149,7 +2149,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 28.142813, y: 0}
+  m_AnchoredPosition: {x: 28.142578, y: 0}
   m_SizeDelta: {x: -1700, y: -1030}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &959794489
@@ -2711,7 +2711,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -641, y: 80.61997}
+  m_AnchoredPosition: {x: -641, y: 80.61987}
   m_SizeDelta: {x: -1916, y: -1224}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1502163998
@@ -3117,7 +3117,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -31.599121, y: 0.45568848}
+  m_AnchoredPosition: {x: -31.599121, y: 0.4555664}
   m_SizeDelta: {x: -1754.4, y: -1068.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1711135151

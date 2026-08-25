@@ -178,9 +178,11 @@ public class EnemyHealth : MonoBehaviour
         {
             animator.ResetTrigger("Hit");
             animator.SetTrigger("Dead");
+           
         }
+      
 
         // Destroy
-       // Destroy(gameObject, deathTime);
+        // Destroy(gameObject, deathTime); 
     }
 }
